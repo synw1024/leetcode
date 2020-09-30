@@ -16,34 +16,11 @@ func insertIntoBST(root *TreeNode, val int) *TreeNode {
 	if root == nil {
 		return &TreeNode{val, nil, nil}
 	}
-	finded := false
-	var build func(root *TreeNode)
-	build = func(root *TreeNode) {
-		if root.Left != nil {
-			build(root.Left)
-		}
-		if root.Val > val && !finded {
-			newNode := &TreeNode{val, root.Left, nil}
-			root.Left = newNode
-			finded = true
-			return
-		}
-		if root.Right != nil {
-			build(root.Right)
-		}
-	}
-	build(root)
-	if !finded {
-		var buildRight func(root *TreeNode)
-		buildRight = func(root *TreeNode) {
-			if root.Right == nil {
-				newNode := &TreeNode{val, nil, nil}
-				root.Right = newNode
-				return
-			}
-			buildRight(root.Right)
-		}
-		buildRight(root)
+
+	if root.Val > val {
+		root.Left = insertIntoBST(root.Left, val)
+	} else {
+		root.Right = insertIntoBST(root.Right, val)
 	}
 	return root
 }
