@@ -20,13 +20,15 @@ func getHappyString(n int, k int) string {
 		}
 	}
 
-	for i := 1; i < k; i++ {
-		temp := append([]int{}, arr...)
-		fmt.Println("temp", temp)
+	temp := append([]int{}, arr...)
+	for i := 1; i < k; {
 		if !addOne(&temp) {
 			return ""
 		}
-		arr = append([]int{}, temp...)
+		if !isDuplication(&temp) {
+			arr = append([]int{}, temp...)
+			i++
+		}
 	}
 
 	res := []string{}
@@ -47,22 +49,11 @@ func addOne(_arr *[]int) bool {
 	arr := *_arr
 	arr[len(arr)-1]++
 	for i := len(arr) - 1; i >= 0; i-- {
-		if arr[i] > 2 {
+		if i == 0 && arr[i] > 2 {
+			return false
+		} else if arr[i] > 2 {
 			arr[i] = 0
-			if i == 0 {
-				return false
-			}
 			arr[i-1]++
-		} else if i == 0 || isDuplication(_arr) {
-			if i == 0 && !isDuplication(_arr) {
-				return true
-			}
-			if i == 0 && isDuplication(_arr) {
-				i = len(arr)
-				continue
-			}
-			arr[i]++
-			i = len(arr)
 		}
 	}
 	return true
