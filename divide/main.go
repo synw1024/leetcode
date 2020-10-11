@@ -11,16 +11,30 @@ func main() {
 }
 
 func divide(dividend, divisor int) int {
+	res := 0
 	if divisor == 0 {
-		return math.MaxInt32
+		res = math.MaxInt32
 	}
 	if divisor == 1 {
-		return dividend
+		res = dividend
 	}
 	if divisor == -1 {
-		return -dividend
+		res = -dividend
 	}
-	return div(dividend, divisor)
+	isNagative := false
+	if (dividend > 0 && divisor < 0) || (dividend < 0 && divisor > 0) {
+		isNagative = true
+	}
+
+	res = div(abs(dividend), abs(divisor))
+
+	if isNagative {
+		return -res
+	}
+	if res > math.MaxInt32 {
+		return math.MaxInt32
+	}
+	return res
 }
 
 func div(dividend, divisor int) int {
@@ -36,4 +50,11 @@ func div(dividend, divisor int) int {
 	}
 
 	return count + div(dividend-tempDivisor, divisor)
+}
+
+func abs(n int) int {
+	if n < 0 {
+		return -n
+	}
+	return n
 }
