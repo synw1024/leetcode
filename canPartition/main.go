@@ -28,7 +28,7 @@ func canPartition(nums []int) bool {
 	cache := [][]bool{}
 	for i := 0; i < len(nums); i++ {
 		row := []bool{}
-		for j := 0; j < half+1; j++ {
+		for j := 0; j <= half; j++ {
 			if j == 0 {
 				row = append(row, true)
 				continue
