@@ -10,14 +10,29 @@ func main() {
 }
 
 func canPartition(nums []int) bool {
-	sum := 0
+	sum, max := 0, 0
 	for _, v := range nums {
 		sum += v
+		if v > max {
+			max = v
+		}
 	}
 	if sum%2 != 0 {
 		return false
 	}
 	half := sum / 2
+	if max > half {
+		return false
+	}
+
+	cache := [][]bool{}
+	for i := 0; i < len(nums); i++ {
+		temp := []bool{}
+		for j := 0; j < half+1; j++ {
+			temp = append(temp, false)
+		}
+		cache = append(cache, temp)
+	}
 
 	var dp func(ns []int, target int) bool
 	dp = func(ns []int, target int) bool {
