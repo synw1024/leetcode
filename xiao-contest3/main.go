@@ -27,24 +27,23 @@ func main() {
 		arr = append(arr, arrItem)
 	}
 
-	solve(arr)
+	res := solve(arr)
+	fmt.Println(res)
 }
 
-func solve(arr []int) {
-	count, sum, start := 0, 0, 0
+func solve(arr []int) int {
+	count, start := 0, 0
 	for start < len(arr) {
+		sum := 0
 		for i := start; i < len(arr); i++ {
 			sum += arr[i]
 			if sum == 0 {
 				count++
-				start++
-				i = start - 1
 			}
 		}
 		start++
-		sum = 0
 	}
-	fmt.Println(count)
+	return count
 }
 
 func readLine(reader *bufio.Reader) string {

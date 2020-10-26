@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -24,29 +25,43 @@ func main() {
 	}
 
 	res := solve(arr)
-	if res < 0 {
-		fmt.Println(-res)
-	} else {
-		fmt.Println(res)
-	}
+	fmt.Println(int(math.Abs(float64(res))))
 }
 
 func solve(arr []int) int {
 	pos, steps, size := arr[0], arr[1], arr[2]
-	if pos < 0 {
-		pos = -pos
-	}
+	if pos >= 0 {
+		for ; steps > 0; steps-- {
+			if pos > 0 {
+				pos -= size
+			} else {
+				pos += size
+			}
 
-	if steps*size <= pos {
-		return pos - steps*size
-	}
-	remain := steps*size - pos
-
-	if (remain/size)%2 == 0 {
-		return remain % size
+			if pos < 0 {
+				steps--
+				break
+			}
+		}
 	} else {
-		return size - remain%size
+		for ; steps > 0; steps-- {
+			if pos > 0 {
+				pos -= size
+			} else {
+				pos += size
+			}
+
+			if pos > 0 {
+				steps--
+				break
+			}
+		}
 	}
+
+	if steps%2 == 0 {
+		return pos
+	}
+	return size - int(math.Abs(float64(pos)))
 }
 
 func contains(arr []int, n int) bool {
