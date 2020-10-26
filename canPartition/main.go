@@ -27,29 +27,29 @@ func canPartition(nums []int) bool {
 
 	cache := [][]bool{}
 	for i := 0; i < len(nums); i++ {
-		temp := []bool{}
-		for j := 0; j < half+1; j++ {
-			temp = append(temp, false)
+		row := []bool{}
+		for j := 0; j <= half; j++ {
+			if j == 0 {
+				row = append(row, true)
+				continue
+			}
+			row = append(row, false)
 		}
-		cache = append(cache, temp)
+		cache = append(cache, row)
 	}
+	cache[0][nums[0]] = true
 
-	var dp func(ns []int, target int) bool
-	dp = func(ns []int, target int) bool {
-		if target == 0 {
-			return true
-		}
-		if target < 0 {
-			return false
-		}
-		for i, v := range ns {
-			temp := append([]int{}, ns[:i]...)
-			temp = append(temp, ns[i+1:]...)
-			if dp(temp, target-v) {
+	for i := 1; i < len(nums); i++ {
+		for j := 1; j <= half; j++ {
+			if j >= nums[i] {
+				cache[i][j] = cache[i-1][j] || cache[i-1][j-nums[i]]
+			} else {
+				cache[i][j] = cache[i-1][j]
+			}
+			if j == half && cache[i][j] {
 				return true
 			}
 		}
-		return false
 	}
-	return dp(nums, half)
+	return false
 }
