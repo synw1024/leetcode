@@ -11,15 +11,22 @@ func main() {
 }
 
 func hasCycle(head *ListNode) bool {
-	pointerArr, pointer := []*ListNode{}, head
-	for pointer != nil {
-		for _, v := range pointerArr {
-			if v == pointer {
-				return true
-			}
+	if head == nil || head.Next == nil {
+		return false
+	}
+	faster := head
+	if faster.Next == head {
+		return true
+	}
+	for head != nil {
+		if faster.Next == nil || faster.Next.Next == nil {
+			return false
 		}
-		pointerArr = append(pointerArr, pointer)
-		pointer = pointer.Next
+		if head == faster.Next || head == faster.Next.Next {
+			return true
+		}
+		head = head.Next
+		faster = faster.Next.Next
 	}
 	return false
 }
