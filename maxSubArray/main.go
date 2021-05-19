@@ -1,39 +1,55 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 func main() {
-	res := maxSubArray([]int{5, 4, -1, 7, 8})
+	res := maxSubArray([]int{-2, 1, -3, 4, -1, 2, 1, -5, 4})
 	fmt.Println(res)
 }
 
+// func maxSubArray(nums []int) int {
+// 	l := len(nums)
+// 	dp := make([][2]int, l)
+// 	dp[0][0] = 0
+// 	dp[0][1] = nums[0]
+// 	for i := 1; i < l; i++ {
+// 		dp[i][0] = max(dp[i-1][0], dp[i-1][1])
+// 		dp[i][1] = max(dp[i-1][0]+nums[i], dp[i-1][1]+nums[i])
+// 	}
+// 	return max(dp[l-1][0], dp[l-1][1])
+// }
+
 func maxSubArray(nums []int) int {
 	l := len(nums)
-	if l == 1 {
+	if l < 2 {
 		return nums[0]
 	}
-	max := nums[0]
-	for i := 0; i < l; {
-		for j := i + 1; j < l; {
-			temp := sum(nums[i : j+1])
-			if max < temp {
-				max = temp
-				j++
-				continue
-			}
-			i = j
-			break
-		}
-		i++
+	a := 0
+	b := max(a, nums[0])
+	c := -math.MaxInt64
+	for i := 1; i < l; i++ {
+		b = max(a, b+nums[i])
+		c = max(b, c)
 	}
-
-	return max
+	if c != 0 {
+		return c
+	} else {
+		max := -math.MaxInt64
+		for i := 0; i < l; i++ {
+			if max < nums[i] {
+				max = nums[i]
+			}
+		}
+		return max
+	}
 }
 
-func sum(arr []int) int {
-	sum := 0
-	for _, v := range arr {
-		sum += v
+func max(a, b int) int {
+	if a > b {
+		return a
 	}
-	return sum
+	return b
 }
