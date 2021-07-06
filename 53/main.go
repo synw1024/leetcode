@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 )
 
 func main() {
@@ -9,28 +10,19 @@ func main() {
 	fmt.Println(res)
 }
 
-// func maxSubArray(nums []int) int {
-// 	l := len(nums)
-// 	dp := make([][2]int, l)
-// 	dp[0][0] = 0
-// 	dp[0][1] = nums[0]
-// 	for i := 1; i < l; i++ {
-// 		dp[i][0] = max(dp[i-1][0], dp[i-1][1])
-// 		dp[i][1] = max(dp[i-1][0]+nums[i], dp[i-1][1]+nums[i])
-// 	}
-// 	return max(dp[l-1][0], dp[l-1][1])
-// }
-
 func maxSubArray(nums []int) int {
 	l := len(nums)
-	f := make([]int, l)
-	if nums[0] > 0 {
-		f[0] = nums[0]
-	}
+
+	dp := make([][3]int, l)
+	dp[0][1] = nums[0]
+	dp[0][2] = -math.MaxInt64
+
 	for i := 1; i < l; i++ {
-		f[i] = max(f[i-1], f[i-1]+nums[i])
+		dp[i][1] = max(dp[i-1][0]+nums[i], dp[i-1][1]+nums[i])
+		dp[i][2] = max(dp[i-1][1], dp[i-1][2])
 	}
-	return f[l-1]
+
+	return max(dp[l-1][1], dp[l-1][2])
 }
 
 func max(a, b int) int {
@@ -39,5 +31,3 @@ func max(a, b int) int {
 	}
 	return b
 }
-
-// f[i] = max{f[i-1], f[i-1]+arr[i]}
