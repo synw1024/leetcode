@@ -13,7 +13,7 @@ func main() {
 func maxSubArray(nums []int) int {
 	l := len(nums)
 
-	dp := make([][3]int, l)
+	dp := make([][]int, l)
 	dp[0][1] = nums[0]
 	dp[0][2] = -math.MaxInt64
 
