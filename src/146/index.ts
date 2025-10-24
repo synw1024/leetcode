@@ -27,35 +27,17 @@ class LRUCache {
   put(key: number, value: number): void {
     const link = this.map[key]
 
-    if (!link && this.capacity <= 0) {
-      delete this.map[this.tail!.key]
-      this.tail = this.tail!.prev
-      if (this.tail) {
-        this.tail.next = null
-      } else {
-        this.head = null
-      }
-    }
-
-    if (!link) {
-      const l: Link = {
-        key,
-        prev: null,
-        next: this.head,
-        value
-      }
-      this.map[key] = l
-      if (this.head) {
-        this.head.prev = l
-      } else {
-        this.tail = l
-      }
-      this.head = l
-      this.capacity--
-    } else {
+    if (link) {
       link.value = value
       this.move(link)
+      return
     }
+
+    if (this.capacity <= 0) {
+      this.delete()
+    }
+
+    this.unshift(key, value)
   }
 
   move(link: Link) {
@@ -69,18 +51,36 @@ class LRUCache {
       this.tail = link.prev
     }
 
-    link.next = this.head 
+    link.next = this.head
+    this.head!.prev = link
     this.head = link
+    this.head.prev = null
   }
-}
 
-const obj = new LRUCache(2)
-const params = [[1,1],[2,2],[1],[3,3],[2],[4,4],[1],[3],[4]]
-for (let i = 0; i < params.length; i++) {
-  const p = params[i]
-  if (p.length === 1) {
-    obj.get(p[0])
-  } else {
-    obj.put(p[0], p[1])
+  delete() {
+    delete this.map[this.tail!.key]
+    this.tail = this.tail!.prev
+    if (this.tail) {
+      this.tail.next = null
+    } else {
+      this.head = null
+    }
+  }
+
+  unshift(key: number, value: number) {
+    const l: Link = {
+      key,
+      prev: null,
+      next: this.head,
+      value
+    }
+    this.map[key] = l
+    if (this.head) {
+      this.head.prev = l
+    } else {
+      this.tail = l
+    }
+    this.head = l
+    this.capacity--
   }
 }
