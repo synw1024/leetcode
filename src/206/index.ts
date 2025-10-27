@@ -11,8 +11,8 @@ class ListNode {
 function reverseList(head: ListNode | null): ListNode | null {
     if (!head || !head.next) return head
 
-    const res = reverseList(head.next)
+    const newHead = reverseList(head.next)
     head.next.next = head
     head.next = null
-    return res
+    return newHead
 };
