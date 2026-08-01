@@ -15,7 +15,8 @@
   "type": "module",
   "main": "1.js",
   "scripts": {
-    "leetcode": "sh -c 'tsx \"src/leetcode/$0.ts\"'"
+    "leetcode": "sh -c 'tsx \"src/leetcode/$0.ts\"'",
+    "contest": "sh -c 'tsx \"src/contest/$0.ts\"'"
   },
   "dependencies": {
     "acorn": "^8.15.0",
