@@ -1,54 +1,42 @@
 function findSubstring(s: string, words: string[]): number[] {
   const wl = words[0].length
-  const wordMap: { [key: string]: number } = {}
-  for (let i = 0; i < words.length; i++) {
-    if (wordMap[words[i]]) {
-      wordMap[words[i]]++
-    } else {
-      wordMap[words[i]] = 1
-    }
-  }
-
   const res: number[] = []
   for (let h = 0; h < wl; h++) {
-    let countMap: { [key: string]: number } = {}
-    let count = 0
-    for (let i = h; i <= s.length - (words.length - count); i += wl) {
+    let tempWords = [...words]
+    for (let i = h; i <= s.length - wl * tempWords.length;) {
       const sw = s.slice(i, i + wl)
+      const existingInWords = words.includes(sw)
 
-      if (!wordMap[sw]) {
-        countMap = {}
-        count = 0
+      if (!existingInWords) {
+        i += wl
+        tempWords = [...words]
         continue
       }
 
-      if (countMap[sw]) {
-        countMap[sw]++
+      const index = tempWords.indexOf(sw)
+      if (index === -1) {
+        const removed = words.length - tempWords.length
+        let j = i - removed * wl
+        while (j < i) {
+          const swj = s.slice(j, j + wl)
+          tempWords.push(swj)
+          j += wl
+          if (swj === sw) {
+            break
+          }
+        }
       } else {
-        countMap[sw] = 1
+        tempWords.splice(index, 1)
+        if (!tempWords.length) {
+          const start = i - wl * (words.length - 1)
+          res.push(start)
+          const startWord = s.slice(start, start + wl)
+          tempWords.push(startWord)
+        }
+        i += wl
       }
-      count++
-      let j = i - (count - 1) * wl
-      while (countMap[sw] > wordMap[sw]) {
-        const swj = s.slice(j, j + wl)
-        countMap[swj]--
-        count--
-        j += wl
-      }
-
-      if (count < words.length) {
-        continue
-      }
-
-      const start = i - wl * (count - 1)
-      res.push(start)
-      const startWord = s.slice(start, start + wl)
-      countMap[startWord]--
-      count--
     }
   }
 
   return res
 };
-
-console.log(findSubstring('barfoothefoobarman', ["foo","bar"]))
