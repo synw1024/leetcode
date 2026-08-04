@@ -1,8 +1,14 @@
 function minInitialStrength(monsters: number[], boosts: number[][]): number {
-  const bonus: { [key: number]: number } = {}
-
-  function findBonus() {
-    
+  const diff: number[] = []
+  for (let i = 0; i < boosts.length; i++) {
+    const [start, end, val] = boosts[i]
+    diff[start] = diff[start] ? diff[start] + val : val
+    diff[end+1] = diff[end+1] ? diff[end+1] - val : -val
+  }
+  const bonus: number[] = []
+  bonus[0] = diff[0] || 0
+  for (let i = 1; i < monsters.length; i++) {
+    bonus[i] = bonus[i - 1] + (diff[i] || 0)
   }
 
   let sum = 0
