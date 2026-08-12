@@ -1,78 +1,41 @@
 /**
- * start(n) = start(n - 1) + demand(n - 1) || max(anotherQueue.lastStart + anotherQueue.lastDemand, start(n - 1))
- * wait(n) = demand(n - 1) || max(anotherQueue.lastStart + anotherQueue.lastDemand, start(n - 1)) - start(n - 1)
- * left, right: [[start, demandIndex]]
+ * 
  */
 function minMaxWaitingTime(demand: number[], fuel: number[]): number {
-  let minimumWait: number[] = []
-  function recurse(n: number, left: number[][], right: number[][], wait: number[]) {
+  const cache: {[key: string]: number[]} = {}
+  function recurse(n: number, f0: number, f1: number, w0: number, w1: number) {
+    const key = n + ',' + f0 + ',' + f1 + ',' + w0 + ',' + w1
+    if (cache[key]) return cache[key]
+
+    let res = [n, 0]
+
+    if (n === demand.length) {
+      return [n, 0]
+    }
+
     const d = demand[n]
-    const totalLeft = left.reduce((prev, [_, index]) => prev + demand[index], 0)
-    const totalRight = right.reduce((prev, [_, index]) => prev + demand[index], 0)
-    const totalWait = wait.reduce((prev, cur) => prev + cur, 0)
-    let totalminimumWait = minimumWait.reduce((prev, cur) => prev + cur, 0)
-
-    if (n === demand.length - 1) {
-      if (left[left.length - 1][1] === n - 1) {
-        if (totalLeft + d <= fuel[0] && (totalWait + demand[n - 1] < totalminimumWait || wait.length + 1 > minimumWait.length)) {
-          minimumWait = [...wait, demand[n - 1]]
-        }
-
-        const [lastRightStart, lastRightDemandIndex] = right[right.length - 1]
-        const lastLeftStart = left[left.length - 1][0]
-        const anotherQueueWait = lastRightStart + demand[lastRightDemandIndex] - lastLeftStart
-        totalminimumWait = minimumWait.reduce((prev, cur) => prev + cur, 0)
-        if (totalRight + d <= fuel[1] && (totalWait + anotherQueueWait < totalminimumWait || wait.length + 1 > minimumWait.length)) {
-          minimumWait = [...wait, anotherQueueWait]
-        }
-      } else {
-        if (totalRight + d <= fuel[1] && (totalWait + demand[n - 1] < totalminimumWait || wait.length + 1 > minimumWait.length)) {
-          minimumWait = [...wait, demand[n - 1]]
-        }
-
-        const [lastLeftStart, lastLeftDemandIndex] = left[left.length - 1]
-        const lastRightStart = right[right.length - 1][0]
-        const anotherQueueWait = lastLeftStart + demand[lastLeftDemandIndex] - lastRightStart
-        totalminimumWait = minimumWait.reduce((prev, cur) => prev + cur, 0)
-        if (totalLeft + d <= fuel[0] && (totalWait + anotherQueueWait < totalminimumWait || wait.length + 1 > minimumWait.length)) {
-          minimumWait = [...wait, anotherQueueWait]
-        }
-      }
-      return
-    }
-
-    if (totalLeft + d > fuel[0] && totalRight + d > fuel[1]) {
-      if (wait.length > minimumWait.length) {
-        minimumWait = [...wait]
-      }
-      return
-    }
-
-    if (totalLeft + d <= fuel[0]) {
-      if (left[left.length - 1][1] === n - 1) {
-        const [lastLeftStart, lastLeftDemandIndex] = left[left.length - 1]
-        const start = lastLeftStart + demand[lastLeftDemandIndex]
-        recurse(n + 1, [...left, [start, n]], [...right], [...wait, demand[lastLeftDemandIndex]])
-      } else {
-        const [lastLeftStart] = left[left.length - 1]
-        const [lastRightStart, lastRightDemandIndex] = right[right.length - 1]
-        const start = lastRightStart + demand[lastRightDemandIndex]
-        recurse(n + 1, [...left], [...right, [start, n]], [...wait, start - lastLeftStart])
+    if (f0 - d >= 0) {
+      const next = recurse(n + 1, f0 - d, f1, d, Math.max(0, w1 - w0))
+      const cand = [next[0], Math.max(next[1], w0)]
+      if (next[0] > res[0] || (next[0] === res[0] && cand[1] < res[1])) {
+        res = cand
       }
     }
 
-    if (totalRight + d <= fuel[1]) {
-      if (right[right.length - 1][1] === n - 1) {
-        const [lastRightStart, lastRightDemandIndex] = right[right.length - 1]
-        const start = lastRightStart + demand[lastRightDemandIndex]
-        recurse(n + 1, [...left], [...right, [start, n]], [...wait, demand[lastRightDemandIndex]])
-      } else {
-        const [lastRightStart] = right[right.length - 1]
-        const [lastLeftStart, lastLeftDemandIndex] = left[left.length - 1]
-        const start = lastLeftStart + demand[lastLeftDemandIndex]
-        recurse(n + 1, [...left, [start, n]], [...right], [...wait, start - lastRightStart])
+    if (f1 - d >= 0) {
+      const next = recurse(n + 1, f0, f1 - d, Math.max(0, w0 - w1), d)
+      const cand = [next[0], Math.max(next[1], w1)]
+      if (next[0] > res[0] || (next[0] === res[0] && cand[1] < res[1])) {
+        res = cand
       }
     }
+
+    cache[key] = res
+
+    return res
   }
-  recurse(0, [], [])
+  const res = recurse(0, fuel[0], fuel[1], 0, 0)
+  return res[0] ? res[1] : -1
 };
+
+minMaxWaitingTime([3, 2, 4, 4], [4, 5])
