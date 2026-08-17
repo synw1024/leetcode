@@ -1,14 +1,22 @@
 function maximumGap(skill: string, station: string): number {
   const left: number[] = []
-  for (let i = 0; i < skill.length; i++) {
-    left[i] = station.indexOf(skill[i], (left[i-1] ?? -1) + 1)
-  }
   
   let max = 0, last = station.length
   for (let i = skill.length - 1; i > 0; i--) {
     last = station.lastIndexOf(skill[i], last-1)
-    max = Math.max(max, last - left[i-1])
+    max = Math.max(max, last - getLeft(i-1))
   }
+
+  function getLeft(i: number) {
+    if (left[i] !== undefined) return left[i]
+    if (i === 0) {
+      left[i] = station.indexOf(skill[i])
+    } else {
+      left[i] = station.indexOf(skill[i], getLeft(i - 1) + 1)
+    }
+    return left[i]
+  }
+
   return max
 };
 
