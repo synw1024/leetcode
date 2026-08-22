@@ -1,6 +1,3 @@
-/**
- * 
- */
 function minMaxWaitingTime(demand: number[], fuel: number[]): number {
   const cache: {[key: string]: number[]} = {}
   function recurse(n: number, f0: number, f1: number, w0: number, w1: number) {
