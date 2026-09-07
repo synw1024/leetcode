@@ -3,67 +3,27 @@ function minCost(grid: number[][], k: number): number {
   const n = grid[0].length
 
   const cache: { [key: string]: number } = {}
-  function recurse(i: number, j: number, visited: string, direction: number, turn: number): number {
+  const dirs = [[-1, 0], [0, 1], [1, 0], [0, -1]]
+  function recurse(i: number, j: number, direction: number, turn: number): number {
     if (i === m - 1 && j === n - 1) return grid[i][j]
 
-    visited = newVisited(visited, i * n + j)
     const key = i + ',' + j + ',' + direction + ',' + turn
     if (cache[key] !== undefined) return cache[key]
 
     let min = Number.MAX_SAFE_INTEGER
-    if (i - 1 >= 0 && !checkVisited(visited, i - 1, j)) {
-      const newTurn = direction === 1 || !direction ? turn : turn - 1
-      if (newTurn >= 0) {
-        const next = recurse(i - 1, j, visited, 1, newTurn)
-        if (next !== -1) {
-          min = Math.min(min, next)
-        }
-      }
-    }
-    if (j + 1 < n && !checkVisited(visited, i, j + 1)) {
-      const newTurn = direction === 2 || !direction ? turn : turn - 1
-      if (newTurn >= 0) {
-        const next = recurse(i, j + 1, visited, 2, newTurn)
-        if (next !== -1) {
-          min = Math.min(min, next)
-        }
-      }
-    }
-    if (i + 1 < m && !checkVisited(visited, i + 1, j)) {
-      const newTurn = direction === 3 || !direction ? turn : turn - 1
-      if (newTurn >= 0) {
-        const next = recurse(i + 1, j, visited, 3, newTurn)
-        if (next !== -1) {
-          min = Math.min(min, next)
-        }
-      }
-    }
-    if (j - 1 >= 0 && !checkVisited(visited, i, j - 1)) {
-      const newTurn = direction === 4 || !direction ? turn : turn - 1
-      if (newTurn >= 0) {
-        const next = recurse(i, j - 1, visited, 4, newTurn)
-        if (next !== -1) {
-          min = Math.min(min, next)
-        }
-      }
+    for (let d = 0; d < dirs.length; d++) {
+      const [x, y] = [i + dirs[d][0], j + dirs[d][1]]
+      if (x < 0 || x >= m || y < 0 || y >= n || (direction !== -1 && (d + 2) % 4 === direction)) continue
+
+      const t = d === direction || direction === -1 ? turn : turn - 1
+      if (t < 0) continue
+
+      min = Math.min(min, recurse(x, y, d, t) + grid[i][j])
     }
 
-    if (min === Number.MAX_SAFE_INTEGER) {
-      return -1
-    } else {
-      return cache[key] = min + grid[i][j]
-    }
+    return cache[key] = min
   }
 
-  function checkVisited(visited: string, i: number, j: number) {
-    return visited[i * n + j] === '1'
-  }
-
-  function newVisited(visited: string, index: number) {
-    return visited.slice(0, index) + '1' + visited.slice(index + 1)
-  }
-
-  return recurse(0, 0, Array(m * n).fill(0).join(''), 0, k)
+  const res = recurse(0, 0, -1, k)
+  return res >= Number.MAX_SAFE_INTEGER ? -1 : res
 };
-
-console.log(minCost([[39,53,65,3,45,72,25,3],[64,48,38,64,17,24,24,53],[73,30,69,33,58,40,28,74],[76,8,6,6,28,61,72,17],[57,22,22,65,40,56,4,55],[75,15,7,25,62,20,57,37],[15,2,48,54,25,61,49,28]], 6))
