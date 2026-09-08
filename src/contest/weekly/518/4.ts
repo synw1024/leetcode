@@ -29,8 +29,7 @@ function minCost(grid: number[][], k: number): number {
       const t = d === direction || direction === -1 ? turn : turn + 1
       if (t > k) continue
 
-      const res = recurse(x, y, d, t)
-      min = Math.min(min, res + grid[i][j])
+      min = Math.min(min, recurse(x, y, d, t) + grid[i][j])
       if (!min) break
     }
 
