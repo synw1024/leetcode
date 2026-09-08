@@ -3,6 +3,7 @@ function minCost(grid: number[][], k: number): number {
   const n = grid[0].length
 
   const cache: number[][][][] = []
+
   for (let i = 0; i < m; i++) {
     const aa: number[][][] = []
     for (let j = 0; j < n; j++) {
